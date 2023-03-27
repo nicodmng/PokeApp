@@ -10,10 +10,11 @@ import UIKit
 class SearchController: UIViewController {
     
     // MARK: - Properties
+
+    private let viewModel = SearchViewModel()
+    
     // IBOutlets
-    
     @IBOutlet weak var pokemonNameTextField: UITextField!
-    
     @IBOutlet weak var namePokemonLabel: UILabel!
     @IBOutlet weak var pokemonImageView: UIImageView!
     @IBOutlet weak var hpLabel: UILabel!
@@ -24,46 +25,33 @@ class SearchController: UIViewController {
     @IBOutlet weak var speedLabel: UILabel!
     
     @IBAction func searchButtonPressed(_ sender: UIButton) {
-        getPokemon(name: pokemonNameTextField.text ?? "")
+        viewModel.load(name: pokemonNameTextField.text ?? "")
     }
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        bind()
     }
     
     // MARK: - Methods
     
-    func getPokemon(name: String) {
-        
-        guard let urlAPI = URL(string: "https://pokebuildapi.fr/api/v1/pokemon/\(name)") else { return }
-        
-        let session = URLSession(configuration: .default)
-        
-        let task = session.dataTask(with: urlAPI) { data, response, error in
-            if error != nil {
-                print(error!)
-                return
-            }
-            
-            if let safeData = data {
-                self.parseJSON(pokemonData: safeData)
-            }
+    private func bind() {
+        viewModel.pokemon = { pokemon in
+            self.namePokemonLabel.text = pokemon.name
+            let urlPokemon = URL(string: pokemon.image)
+            self.pokemonImageView.load(url: urlPokemon!)
+            self.attackLabel.text = pokemon.attack
+            self.hpLabel.text = pokemon.hp
+            self.specialAttackLabel.text = pokemon.specialAttack
+            self.specialDefenseLabel.text = pokemon.specialDefense
+            self.defenseLabel.text = pokemon.defense
+            self.speedLabel.text = pokemon.speed
         }
-        task.resume()
     }
     
-    func parseJSON(pokemonData: Data) {
-        let decoder = JSONDecoder()
-        do {
-            let decodedData = try decoder.decode(PokemonData.self, from: pokemonData)
-            self.namePokemonLabel.text = decodedData.name
-        } catch {
-            print(error)
-        }
-    }
+  
     
 }
 

@@ -10,11 +10,19 @@ import Foundation
 struct PokemonData: Decodable {
     let name: String
     let image: String
-
-//    let HP: Int
-//    let attack: Int
-//    let defense: Int
-//    let special_attack: Int
-//    let special_defense: Int
-//    let speed: Int
+    let stats: Stats
 }
+
+struct Stats: Codable {
+    let hp, attack, defense, specialAttack: Int
+    let specialDefense, speed: Int
+
+    enum CodingKeys: String, CodingKey {
+        case hp = "HP"
+        case attack, defense
+        case specialAttack = "special_attack"
+        case specialDefense = "special_defense"
+        case speed
+    }
+}
+
