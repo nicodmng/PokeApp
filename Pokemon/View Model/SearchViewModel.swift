@@ -8,17 +8,15 @@
 import Foundation
 
 final class SearchViewModel {
+    // MARK: - Properties
     
+    let service = PokemonService()
     var pokemon: ((Pokemon) -> Void)?
     
-    func viewDidLoad() {
-     
-    }
-    
-
+    // MARK: - Methods
     
     func load(name: String) {
-        getPokemon(name: name) { result in
+        service.getPokemon(name: name) { result in
             switch result {
             case let .success(data):
                 let pokemon = Pokemon(
@@ -32,12 +30,14 @@ final class SearchViewModel {
                     speed: String(data.stats.speed))
                 self.pokemon?(pokemon)
             case let .failure(error):
-                print("")
+                print("\(error)")
             }
         }
     }
     
 }
+
+// MARK: - Structures
 
 struct Pokemon {
     let name: String

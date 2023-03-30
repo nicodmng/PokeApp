@@ -7,6 +7,8 @@
 
 import Foundation
 
+class PokemonService {
+    
 func getPokemon(name: String, callback: @escaping (Result<PokemonData, Error>) -> Void) {
     guard let urlAPI = URL(string: "https://pokebuildapi.fr/api/v1/pokemon/\(name)") else { return }
     
@@ -19,20 +21,21 @@ func getPokemon(name: String, callback: @escaping (Result<PokemonData, Error>) -
         }
         
         if let safeData = data {
-            parseJSON(pokemonData: safeData, callback: callback)
+            self.parseJSON(pokemonData: safeData, callback: callback)
         }
     }
     task.resume()
 }
 
-func parseJSON(pokemonData: Data, callback: @escaping (Result<PokemonData, Error>) -> Void) {
-    DispatchQueue.main.async {
-        let decoder = JSONDecoder()
-        do {
-            let decodedData = try decoder.decode(PokemonData.self, from: pokemonData)
-            callback(.success(decodedData))
-        } catch {
-            callback(.failure(error))
+    func parseJSON(pokemonData: Data, callback: @escaping (Result<PokemonData, Error>) -> Void) {
+        DispatchQueue.main.async {
+            let decoder = JSONDecoder()
+            do {
+                let decodedData = try decoder.decode(PokemonData.self, from: pokemonData)
+                callback(.success(decodedData))
+            } catch {
+                callback(.failure(error))
+            }
         }
     }
 }
